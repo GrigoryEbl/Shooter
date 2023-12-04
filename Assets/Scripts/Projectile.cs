@@ -5,12 +5,14 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private Collider _projectileCollider;
 
     private float _damage;
 
-    internal void Initialize(float damage)
+    internal void Initialize(float damage, Collider collider)
     {
         _damage = damage;
+        Physics.IgnoreCollision(collider, _projectileCollider);
     }
 
     public void Shoot(Vector3 startPoint, Vector3 speed)
