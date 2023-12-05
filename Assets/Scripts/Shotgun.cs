@@ -17,6 +17,15 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private AudioSource _reloadSound;
 
+    [Header("Recoil")]
+    [SerializeField] private CameraShake _cameraShake;
+
+    [Header("Shell")]
+    [SerializeField] private Rigidbody _shellPrefab;
+    [SerializeField] private Transform _shellPoint;
+    [SerializeField] private float _shellSpeed = 2;
+    [SerializeField] private float _shellAngularSpeed = 15;
+
     private Vector3 _startPoint;
     private Vector3 _direction;
     private Collider _collider;
@@ -46,6 +55,9 @@ public class Shotgun : MonoBehaviour
 
     private void RaycastShoot(Vector3 startPoint, Vector3 direction)
     {
+        _cameraShake.CallMakeRecoil();
+        _cameraShake.CallMakeShake();
+
         if (Physics.SphereCast(startPoint, 0.01f, direction, out RaycastHit hitInfo, _maxDistance, _layerMask, QueryTriggerInteraction.Ignore))
         {
             var decal = Instantiate(_decal, hitInfo.transform);
@@ -80,8 +92,15 @@ public class Shotgun : MonoBehaviour
         }
     }
 
+    public void ExtractShell()
+    {
+        var shell = Instantiate(_shellPrefab, _shellPoint.position, _shellPoint.rotation);
+        shell.velocity = _shellPoint.forward * _shellSpeed;
+        shell.angularVelocity = Vector3.up * _shellAngularSpeed;
+    }
+
     public void ShootSound()
     {
-
+        _reloadSound.Play();
     }
 }
