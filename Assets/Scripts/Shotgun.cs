@@ -16,6 +16,7 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private ShootEffect _shootEffect;
     [SerializeField] private Animator _animator;
     [SerializeField] private AudioSource _reloadSound;
+    [SerializeField] private WaterSplasher _splasher;
 
     [Header("Recoil")]
     [SerializeField] private CameraShake _cameraShake;
@@ -55,11 +56,12 @@ public class Shotgun : MonoBehaviour
 
     private void RaycastShoot(Vector3 startPoint, Vector3 direction)
     {
-        _cameraShake.CallMakeRecoil();
-        _cameraShake.CallMakeShake();
+        _cameraShake.MakeRecoil();
 
         if (Physics.SphereCast(startPoint, 0.01f, direction, out RaycastHit hitInfo, _maxDistance, _layerMask, QueryTriggerInteraction.Ignore))
         {
+            _splasher.TryCreateWaterSplash(startPoint, hitInfo.point);
+
             var decal = Instantiate(_decal, hitInfo.transform);
             decal.position = hitInfo.point + hitInfo.normal * _decalOffset;
             decal.LookAt(hitInfo.point);
